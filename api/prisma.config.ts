@@ -1,11 +1,13 @@
 import { defineConfig } from 'prisma/config';
 
+process.loadEnvFile('.env');
+
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
     path: 'prisma/migrations'
   },
   datasource: {
-    url: 'postgresql://admin:admin@localhost:5432/corcoiote'
+    url: process.env.DATABASE_URL
   }
 });
