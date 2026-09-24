@@ -2,7 +2,7 @@ import users from '../mocks/user.mock.ts';
 import type { User, CreateUser, UpdateUser } from '../types/user.type.ts';
 
 export function findAllUsers(): User[] {
-  return users;
+  return prisma.users.findMany();
 }
 
 export function findUserById(id: number): User {
@@ -44,18 +44,7 @@ export function modifyUser(id: number, {
   email,
   password
 }: UpdateUser): User {
-  function findUser() {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].id === id) {
-        return users[i];
-      }
-    }
-  }
-
-  const user = findUser();
-
-  if (!user)
-    throw new Error(`Usuário de id ${id} não encontrado.`);
+  const user = findUserById(id);
 
   if (name) user.name = name;
   if (email) user.email = email;
