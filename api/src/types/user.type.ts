@@ -2,8 +2,7 @@ export type User = {
   id: number;
   name: string;
   email: string;
-  password: string;
-}
+  createdAt: Date;
+};
 
-export type CreateUser = Omit<User, 'id'>;
-export type UpdateUser = Partial<Omit<User, 'id'>>;
+export type { CreateUser, UpdateUser } from '../schemas/user.schema.ts';

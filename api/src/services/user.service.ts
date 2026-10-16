@@ -1,72 +1,57 @@
-import type { User, CreateUser, UpdateUser } from '../types/user.type.ts';
+import prisma from '../lib/prisma.ts';
+import type { CreateUser, UpdateUser } from '../schemas/user.schema.ts';
+import type { User } from '../types/user.type.ts';
 
-export function findAllUsers(): User[] {
-  return prisma.users.findMany();
-}
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  createdAt: true
+} as const;
 
-export function findUserById(id: number): User {
-  function findUser() {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].id === id) {
-        return users[i];
-      }
-    }
+export class UserNotFoundError extends Error {
+  constructor(id: number) {
+    super(`Usuário de id ${id} não encontrado.`);
+    this.name = 'UserNotFoundError';
   }
+}
 
-  const user = findUser();
+export async function findAllUsers(): Promise<User[]> {
+  return prisma.user.findMany({
+    select: userSelect,
+    orderBy: { createdAt: 'desc' }
+  });
+}
 
-  if (!user)
-    throw new Error(`Usuário de id ${id} não encontrado.`);
+export async function findUserById(id: number): Promise<User> {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: userSelect
+  });
+
+  if (!user) throw new UserNotFoundError(id);
 
   return user;
 }
 
-export function insertUser({
-  name,
-  email,
-  password
-}: CreateUser): User {  
-  const user: User = {
-    id: users[users.length - 1].id + 1,
-    name,
-    email,
-    password
-  };
-
-  users[users.length] = user;
-
-  return user;
+export async function insertUser(data: CreateUser): Promise<User> {
+  return prisma.user.create({
+    data,
+    select: userSelect
+  });
 }
 
-export function modifyUser(id: number, {
-  name,
-  email,
-  password
-}: UpdateUser): User {
-  const user = findUserById(id);
+export async function modifyUser(id: number, data: UpdateUser): Promise<User> {
+  await findUserById(id);
 
-  if (name) user.name = name;
-  if (email) user.email = email;
-  if (password) user.password = password;
-
-  return user;
+  return prisma.user.update({
+    where: { id },
+    data,
+    select: userSelect
+  });
 }
 
-export function removeUser(id: number) {
-  function findIndex() {
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].id === id) {
-        return i;
-      }
-    }
-
-    return -1;
-  };
-
-  const index = findIndex();
-
-  if (index === -1)
-    throw new Error(`Usuário de id ${id} não encontrado.`);
-
-  users.splice(index, 1);
+export async function removeUser(id: number): Promise<void> {
+  await findUserById(id);
+  await prisma.user.delete({ where: { id } });
 }
