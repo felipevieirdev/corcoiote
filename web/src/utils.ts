@@ -1,12 +1,12 @@
-import { InvoiceStatus } from "./invoiceType";
+import type { InvoiceStatus } from './invoiceType';
 
 export function formatCurrency(value: number): string {
   const formatter = Intl.NumberFormat('pt-BR', {
-    style: "currency",
-    currency: 'BRL',
-   });
+    style: 'currency',
+    currency: 'BRL'
+  });
 
-   return formatter.format(value / 100);
+  return formatter.format(value / 100);
 }
 
 export function formatDate(date: string): string {
