@@ -5,7 +5,6 @@ import routerInvoices from './routes/invoice.route.ts';
 import path from 'node:path';
 
 const client = path.join(import.meta.dirname, '..', '..', 'web');
-console.log(client);
 
 const app = express();
 

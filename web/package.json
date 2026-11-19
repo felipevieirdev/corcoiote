@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "check": "tsc"
   },
   "dependencies": {
